@@ -351,7 +351,8 @@ point9_9 = [635, 652.5]
 
 
 #---------Stuff for the Isometric Grid -------
-
+popupX = 0
+popupY = 0
 grid1_1 = False
 # OUR GRID MAP:
 cellMAP = np.random.randint(2, size=(10, 10))
@@ -372,6 +373,43 @@ _VARS = {'surf': pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT)),
          'isoGridOrigin': [520, -140]}
 
 
+popupX, popupY  = pygame.mouse.get_pos() 
+
+def popUp(rectangle): 
+  loop = True
+  check = False
+  while loop:
+    #_VARS['surf'].blit(BG, (0, 0))
+    pygame.draw.rect(_VARS['surf'], BLACK, rectangle, 2)    
+    for event in pygame.event.get():
+        x, y = pygame.mouse.get_pos()
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+        if event.type == pygame.MOUSEBUTTONDOWN:          
+          if rectangle.collidepoint(x, y):
+            check = True
+            popupX = x
+            popupY = y
+              
+        if check:
+          popup = pygame.Rect((popupX-5,popupY-5),(100,500))
+          pygame.draw.rect(_VARS['surf'], BLACK, popup, 2 )
+          button1 = writeText("Hospital", get_font2(30), GOLD, _VARS['surf'], popupX+45, popupY +20 ) 
+          button2 = writeText("Farm", get_font2(30), GOLD, _VARS['surf'], popupX+45, popupY+60) 
+          if event.type== pygame.MOUSEBUTTONDOWN:
+            if button1.collidepoint(x,y):
+                print ("Hospital")
+            if button2.collidepoint(x, y):
+                print("Farm")         
+          if popup.collidepoint(x, y) == False:
+            print ("false")
+            check = False
+            _VARS['surf'].blit(BG, (0, 0))
+            loop = False
+        
+        pygame.display.update()
+
 def main_ocean():
     health = 100
     population = 0
@@ -380,12 +418,10 @@ def main_ocean():
     blue = 0
     green = 0
     ascending = True    
-    BG = pygame.image.load("Assets/pixil-frame-0.png")
+    pygame.display.set_caption("Your Space Colony")
+    BG = pygame.image.load("Assets/OceanBackGround.gif")
     BG = pygame.transform.scale(BG, (WINDOW_WIDTH, WINDOW_HEIGHT))
     while True:
-
-
-        
         pygame.draw.rect(_VARS["surf"], BLACK, rect0_0, 2)
         pygame.draw.rect(_VARS["surf"], BLACK, rect0_1, 2)
         pygame.draw.rect(_VARS["surf"], BLACK, rect0_2, 2)
@@ -486,7 +522,6 @@ def main_ocean():
         pygame.draw.rect(_VARS["surf"], BLACK, rect9_7, 2)
         pygame.draw.rect(_VARS["surf"], BLACK, rect9_8, 2)
         pygame.draw.rect(_VARS["surf"], BLACK, rect9_9, 2)
-
         _VARS['surf'].fill((red, blue, green))
         _VARS['surf'].blit(BG, (0, 0))
         writeText("This is the Ocean Planet", get_font2(75), WHITE, _VARS['surf'], WINDOW_WIDTH / 2, 100)
@@ -498,7 +533,7 @@ def main_ocean():
                           _VARS['gridSize'],
                           _VARS['cellSize'])
         checkEvents()
-        pygame.display.update()
+        
         if ascending:
           blue += 1
           green +=1
@@ -512,6 +547,7 @@ def main_ocean():
           if blue == 0:
               ascending = True
         time.sleep(.000001)
+        pygame.display.update()
 
 
 def main_rocky():
@@ -522,20 +558,11 @@ def main_rocky():
     blue = 0
     green = 0
     ascending = True    
-    BG = pygame.image.load("Assets/pixil-frame-0.png")
+    check = False
+    pygame.display.set_caption("Your Space Colony")
+    BG = pygame.image.load("Assets/RockyBackGround.png")
     BG = pygame.transform.scale(BG, (WINDOW_WIDTH, WINDOW_HEIGHT))
     while True:
-
-        _VARS['surf'].fill((red, blue, green))
-        _VARS['surf'].blit(BG, (0, 0))
-        writeText("This is the Rocky Planet", get_font2(75), WHITE, _VARS['surf'], WINDOW_WIDTH / 2, 100)
-        hud(health, population, money)
-        # PLacing tiles first to avoid tile border issues
-        placeISOTiles()
-        
-        drawIsometricGrid(_VARS['isoGridOrigin'],
-                          _VARS['gridSize'],
-                          _VARS['cellSize'])
         
         pygame.draw.rect(_VARS["surf"], BLACK, rect0_0, 2)
         pygame.draw.rect(_VARS["surf"], BLACK, rect0_1, 2)
@@ -637,6 +664,17 @@ def main_rocky():
         pygame.draw.rect(_VARS["surf"], BLACK, rect9_7, 2)
         pygame.draw.rect(_VARS["surf"], BLACK, rect9_8, 2)
         pygame.draw.rect(_VARS["surf"], BLACK, rect9_9, 2)
+        _VARS['surf'].fill((red, blue, green))
+        _VARS['surf'].blit(BG, (0, 0))
+        writeText("This is the Rocky Planet", get_font2(75), WHITE, _VARS['surf'], WINDOW_WIDTH / 2, 100)
+        hud(health, population, money)
+        # PLacing tiles first to avoid tile border issues
+        placeISOTiles()
+        
+        drawIsometricGrid(_VARS['isoGridOrigin'],
+                          _VARS['gridSize'],
+                          _VARS['cellSize'])
+
         checkEvents()
         pygame.display.update()
         if ascending:
@@ -651,7 +689,7 @@ def main_rocky():
           red -=1
           if blue == 0:
               ascending = True
-        time.sleep(.000001)
+        time.sleep(.0001)
 
 def main_mystery():
     health = 100
@@ -660,21 +698,11 @@ def main_mystery():
     red = 0
     blue = 0
     green = 0
-    ascending = True    
+    ascending = True  
+    pygame.display.set_caption("Your Space Colony")  
     BG = pygame.image.load("Assets/pixil-frame-0.png")
     BG = pygame.transform.scale(BG, (WINDOW_WIDTH, WINDOW_HEIGHT))
     while True:
-
-        _VARS['surf'].fill((red, blue, green))
-        _VARS['surf'].blit(BG, (0, 0))
-        writeText("This is the Mystery Planet", get_font2(75), WHITE, _VARS['surf'], WINDOW_WIDTH / 2, 100)
-        hud(health, population, money)
-        # PLacing tiles first to avoid tile border issues
-        placeISOTiles()
-        
-        drawIsometricGrid(_VARS['isoGridOrigin'],
-                          _VARS['gridSize'],
-                          _VARS['cellSize'])
         
         pygame.draw.rect(_VARS["surf"], BLACK, rect0_0, 2)
         pygame.draw.rect(_VARS["surf"], BLACK, rect0_1, 2)
@@ -776,6 +804,16 @@ def main_mystery():
         pygame.draw.rect(_VARS["surf"], BLACK, rect9_7, 2)
         pygame.draw.rect(_VARS["surf"], BLACK, rect9_8, 2)
         pygame.draw.rect(_VARS["surf"], BLACK, rect9_9, 2)
+        _VARS['surf'].fill((red, blue, green))
+        _VARS['surf'].blit(BG, (0, 0))
+        writeText("This is the Mystery Planet", get_font2(75), WHITE, _VARS['surf'], WINDOW_WIDTH / 2, 100)
+        hud(health, population, money)
+        # PLacing tiles first to avoid tile border issues
+        placeISOTiles()
+        
+        drawIsometricGrid(_VARS['isoGridOrigin'],
+                          _VARS['gridSize'],
+                          _VARS['cellSize'])
         checkEvents()
         pygame.display.update()
         if ascending:
@@ -854,312 +892,410 @@ def checkEvents():
     x, y = pygame.mouse.get_pos()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            sys.exit()
-        if event.type == KEYDOWN and event.key == K_q:
             pygame.quit()
             sys.exit()
         if event.type == pygame.MOUSEBUTTONDOWN:
             x, y = pygame.mouse.get_pos()
         if rect0_0.collidepoint(x, y):
             point = [point0_0[0]+ 2, point0_0[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)
+            #placeISOTile(isoToCart(point), YELLOW, 50)
+            popUp(rect0_0) 
         if rect1_0.collidepoint(x, y):
             point = [point1_0[0]+ 2, point1_0[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)
+            #placeISOTile(isoToCart(point), YELLOW, 50)
+            popUp(rect1_0) 
         if rect2_0.collidepoint(x, y):
             point = [point2_0[0]+ 2, point2_0[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)
+            #placeISOTile(isoToCart(point), YELLOW, 50)
+            popUp(rect2_0) 
         if rect3_0.collidepoint(x, y):
             point = [point3_0[0]+ 2, point3_0[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)
+            #placeISOTile(isoToCart(point), YELLOW, 50)
+            popUp(rect3_0) 
         if rect4_0.collidepoint(x, y):
             point = [point4_0[0]+ 2, point4_0[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)
+            #placeISOTile(isoToCart(point), YELLOW, 50)
+            popUp(rect4_0) 
         if rect5_0.collidepoint(x, y):
             point = [point5_0[0]+ 2, point5_0[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)
+            #placeISOTile(isoToCart(point), YELLOW, 50)
+            popUp(rect5_0) 
         if rect6_0.collidepoint(x, y):
             point = [point6_0[0]+ 2, point6_0[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)
+            #placeISOTile(isoToCart(point), YELLOW, 50)
+            popUp(rect6_0) 
         if rect7_0.collidepoint(x, y):
             point = [point7_0[0]+ 2, point7_0[1] -9.5]
             placeISOTile(isoToCart(point), YELLOW, 50)
+            popUp(rect7_0) 
         if rect8_0.collidepoint(x, y):
             point = [point8_0[0]+ 2, point8_0[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)
+            #placeISOTile(isoToCart(point), YELLOW, 50)
+            popUp(rect8_0) 
         if rect9_0.collidepoint(x, y):
             point = [point9_0[0]+ 2, point9_0[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)
+            #placeISOTile(isoToCart(point), YELLOW, 50)
+            popUp(rect9_0) 
         if rect0_1.collidepoint(x, y):
             point = [point0_1[0]+ 2, point0_1[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)
+            #placeISOTile(isoToCart(point), YELLOW, 50)
+            popUp(rect0_1) 
         if rect1_1.collidepoint(x, y):
             point = [point1_1[0]+ 2, point1_1[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)
+            #placeISOTile(isoToCart(point), YELLOW, 50)
+            popUp(rect1_1) 
         if rect2_1.collidepoint(x, y):
             point = [point2_1[0]+ 2, point2_1[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)
+            #placeISOTile(isoToCart(point), YELLOW, 50)
+            popUp(rect2_1) 
         if rect3_1.collidepoint(x, y):
             point = [point3_1[0]+ 2, point3_1[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)
+            #placeISOTile(isoToCart(point), YELLOW, 50)
+            popUp(rect3_1) 
         if rect4_1.collidepoint(x, y):
             point = [point4_1[0]+ 2, point4_1[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)    
+            #placeISOTile(isoToCart(point), YELLOW, 50)   
+            popUp(rect4_1)  
         if rect5_1.collidepoint(x, y):
             point = [point5_1[0]+ 2, point5_1[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)    
+            #placeISOTile(isoToCart(point), YELLOW, 50)
+            popUp(rect5_1)     
         if rect6_1.collidepoint(x, y):
             point = [point6_1[0]+ 2, point6_1[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)           
+            #placeISOTile(isoToCart(point), YELLOW, 50)
+            popUp(rect6_1)            
         if rect7_1.collidepoint(x, y):
             point = [point7_1[0]+ 2, point7_1[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)    
+            #placeISOTile(isoToCart(point), YELLOW, 50)  
+            popUp(rect7_1)   
         if rect8_1.collidepoint(x, y):
             point = [point8_1[0]+ 2, point8_1[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)    
+            #placeISOTile(isoToCart(point), YELLOW, 50) 
+            popUp(rect8_1)    
         if rect9_1.collidepoint(x, y):
             point = [point9_1[0]+ 2, point9_1[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)    
+            #placeISOTile(isoToCart(point), YELLOW, 50) 
+            popUp(rect9_1)    
         if rect0_2.collidepoint(x, y):
             point = [point0_2[0]+ 2, point0_2[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)   
+            #placeISOTile(isoToCart(point), YELLOW, 50) 
+            popUp(rect0_2)   
         if rect1_2.collidepoint(x, y):
             point = [point1_2[0]+ 2, point1_2[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+            #placeISOTile(isoToCart(point), YELLOW, 50)  
+            popUp(rect1_2) 
         if rect2_2.collidepoint(x, y):
             point = [point2_2[0]+ 2, point2_2[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+            #placeISOTile(isoToCart(point), YELLOW, 50) 
+            popUp(rect2_2)  
         if rect3_2.collidepoint(x, y):
             point = [point3_2[0]+ 2, point3_2[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+            #placeISOTile(isoToCart(point), YELLOW, 50)  
+            popUp(rect3_2) 
         if rect4_2.collidepoint(x, y):
             point = [point4_2[0]+ 2, point4_2[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+            #placeISOTile(isoToCart(point), YELLOW, 50) 
+            popUp(rect4_2)  
         if rect5_2.collidepoint(x, y):
             point = [point5_2[0]+ 2, point5_2[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+            #placeISOTile(isoToCart(point), YELLOW, 50)  
+            popUp(rect5_2) 
         if rect6_2.collidepoint(x, y):
             point = [point6_2[0]+ 2, point6_2[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+            #placeISOTile(isoToCart(point), YELLOW, 50)  
+            popUp(rect6_2) 
         if rect7_2.collidepoint(x, y):
             point = [point7_2[0]+ 2, point7_2[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+            #placeISOTile(isoToCart(point), YELLOW, 50)  
+            popUp(rect7_2) 
         if rect8_2.collidepoint(x, y):
             point = [point8_2[0]+ 2, point8_2[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+            #placeISOTile(isoToCart(point), YELLOW, 50) 
+            popUp(rect8_2)  
         if rect9_2.collidepoint(x, y):
             point = [point9_2[0]+ 2, point9_2[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)   
+            #placeISOTile(isoToCart(point), YELLOW, 50)  
+            popUp(rect9_2)  
         if rect0_3.collidepoint(x, y):
             point = [point0_3[0]+ 2, point0_3[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)   
+            #placeISOTile(isoToCart(point), YELLOW, 50)   
+            popUp(rect0_3) 
         if rect1_3.collidepoint(x, y):
             point = [point1_3[0]+ 2, point1_3[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+            #placeISOTile(isoToCart(point), YELLOW, 50) 
+            popUp(rect1_3)  
         if rect2_3.collidepoint(x, y):
             point = [point2_3[0]+ 2, point2_3[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+            #placeISOTile(isoToCart(point), YELLOW, 50)  
+            popUp(rect2_3)
         if rect3_3.collidepoint(x, y):
             point = [point3_3[0]+ 2, point3_3[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+            #placeISOTile(isoToCart(point), YELLOW, 50)  
+            popUp(rect3_3) 
         if rect4_3.collidepoint(x, y):
             point = [point4_3[0]+ 2, point4_3[1] -9.5]
             placeISOTile(isoToCart(point), YELLOW, 50)  
+            popUp(rect4_3) 
         if rect5_3.collidepoint(x, y):
             point = [point5_3[0]+ 2, point5_3[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+            #placeISOTile(isoToCart(point), YELLOW, 50) 
+            popUp(rect5_3)  
         if rect6_3.collidepoint(x, y):
             point = [point6_3[0]+ 2, point6_3[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+            #placeISOTile(isoToCart(point), YELLOW, 50) 
+            popUp(rect6_3)  
         if rect7_3.collidepoint(x, y):
             point = [point7_3[0]+ 2, point7_3[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+            #placeISOTile(isoToCart(point), YELLOW, 50) 
+            popUp(rect7_3)  
         if rect8_3.collidepoint(x, y):
             point = [point8_3[0]+ 2, point8_3[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+            #placeISOTile(isoToCart(point), YELLOW, 50)  
+            popUp(rect8_3) 
         if rect9_3.collidepoint(x, y):
             point = [point9_3[0]+ 2, point9_3[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+            #placeISOTile(isoToCart(point), YELLOW, 50)  
+            popUp(rect9_3) 
         if rect0_4.collidepoint(x, y):
             point = [point0_4[0]+ 2, point0_4[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)   
+            #placeISOTile(isoToCart(point), YELLOW, 50)  
+            popUp(rect0_4)  
         if rect1_4.collidepoint(x, y):
             point = [point1_4[0]+ 2, point1_4[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+            placeISOTile(isoToCart(point), YELLOW, 50) 
+            popUp(rect1_4)  
         if rect2_4.collidepoint(x, y):
             point = [point2_4[0]+ 2, point2_4[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+            #placeISOTile(isoToCart(point), YELLOW, 50)  
+            popUp(rect2_4)  
         if rect3_4.collidepoint(x, y):
             point = [point3_4[0]+ 2, point3_4[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+            #placeISOTile(isoToCart(point), YELLOW, 50)  
+            popUp(rect3_4)  
         if rect4_4.collidepoint(x, y):
             point = [point4_4[0]+ 2, point4_4[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+            #placeISOTile(isoToCart(point), YELLOW, 50)  
+            popUp(rect4_4)  
         if rect5_4.collidepoint(x, y):
             point = [point5_4[0]+ 2, point5_4[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+            #placeISOTile(isoToCart(point), YELLOW, 50)  
+            popUp(rect5_4)  
         if rect6_4.collidepoint(x, y):
             point = [point6_4[0]+ 2, point6_4[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+            #placeISOTile(isoToCart(point), YELLOW, 50)  
+            popUp(rect6_4)  
         if rect7_4.collidepoint(x, y):
             point = [point7_4[0]+ 2, point7_4[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+            #placeISOTile(isoToCart(point), YELLOW, 50)  
+            popUp(rect7_4)  
         if rect8_4.collidepoint(x, y):
             point = [point8_4[0]+ 2, point8_4[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+            #placeISOTile(isoToCart(point), YELLOW, 50)  
+            popUp(rect8_4)  
         if rect9_4.collidepoint(x, y):
             point = [point9_4[0]+ 2, point9_4[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+            #placeISOTile(isoToCart(point), YELLOW, 50)  
+            popUp(rect9_4)  
         if rect0_5.collidepoint(x, y):
             point = [point0_5[0]+ 2, point0_5[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)   
+            #placeISOTile(isoToCart(point), YELLOW, 50)   
+            popUp(rect0_5)  
         if rect1_5.collidepoint(x, y):
             point = [point1_5[0]+ 2, point1_5[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+            #placeISOTile(isoToCart(point), YELLOW, 50)  
+            popUp(rect1_5)  
         if rect2_5.collidepoint(x, y):
             point = [point2_5[0]+ 2, point2_5[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+            #placeISOTile(isoToCart(point), YELLOW, 50)  
+            popUp(rect2_5)  
         if rect3_5.collidepoint(x, y):
             point = [point3_5[0]+ 2, point3_5[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+            #placeISOTile(isoToCart(point), YELLOW, 50) 
+            popUp(rect3_5)   
         if rect4_5.collidepoint(x, y):
             point = [point4_5[0]+ 2, point4_5[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+            #placeISOTile(isoToCart(point), YELLOW, 50) 
+            popUp(rect4_5)   
         if rect5_5.collidepoint(x, y):
             point = [point5_5[0]+ 2, point5_5[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+            #placeISOTile(isoToCart(point), YELLOW, 50)  
+            popUp(rect5_5)  
         if rect6_5.collidepoint(x, y):
             point = [point6_5[0]+ 2, point6_5[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+            #placeISOTile(isoToCart(point), YELLOW, 50) 
+            popUp(rect6_5)   
         if rect7_5.collidepoint(x, y):
             point = [point7_5[0]+ 2, point7_5[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+            #placeISOTile(isoToCart(point), YELLOW, 50) 
+            popUp(rect7_5)   
         if rect8_5.collidepoint(x, y):
             point = [point8_5[0]+ 2, point8_5[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+            #placeISOTile(isoToCart(point), YELLOW, 50)  
+            popUp(rect8_5)  
         if rect9_5.collidepoint(x, y):
             point = [point9_5[0]+ 2, point9_5[1] -9.5]
             placeISOTile(isoToCart(point), YELLOW, 50) 
+            popUp(rect9_5)  
         if rect0_6.collidepoint(x, y):
             point = [point0_6[0]+ 2, point0_6[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)   
+            #placeISOTile(isoToCart(point), YELLOW, 50)  
+            popUp(rect0_6)  
         if rect1_6.collidepoint(x, y):
             point = [point1_6[0]+ 2, point1_6[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+            #placeISOTile(isoToCart(point), YELLOW, 50)  
+            popUp(rect1_6)  
         if rect2_6.collidepoint(x, y):
             point = [point2_6[0]+ 2, point2_6[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+            #placeISOTile(isoToCart(point), YELLOW, 50)  
+            popUp(rect2_6) 
         if rect3_6.collidepoint(x, y):
             point = [point3_6[0]+ 2, point3_6[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+            #placeISOTile(isoToCart(point), YELLOW, 50)  
+            popUp(rect3_6) 
         if rect4_6.collidepoint(x, y):
             point = [point4_6[0]+ 2, point4_6[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+            #placeISOTile(isoToCart(point), YELLOW, 50)  
+            popUp(rect4_6) 
         if rect5_6.collidepoint(x, y):
             point = [point5_6[0]+ 2, point5_6[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+            #placeISOTile(isoToCart(point), YELLOW, 50)  
+            popUp(rect5_6) 
         if rect6_6.collidepoint(x, y):
             point = [point6_6[0]+ 2, point6_6[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+            #placeISOTile(isoToCart(point), YELLOW, 50) 
+            popUp(rect6_6)  
         if rect7_6.collidepoint(x, y):
             point = [point7_6[0]+ 2, point7_6[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+            #placeISOTile(isoToCart(point), YELLOW, 50) 
+            popUp(rect7_6)  
         if rect8_6.collidepoint(x, y):
             point = [point8_6[0]+ 2, point8_6[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+            #placeISOTile(isoToCart(point), YELLOW, 50)  
+            popUp(rect8_6) 
         if rect9_6.collidepoint(x, y):
             point = [point9_6[0]+ 2, point9_6[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)   
+            #placeISOTile(isoToCart(point), YELLOW, 50)  
+            popUp(rect9_6)  
         if rect0_7.collidepoint(x, y):
             point = [point0_7[0]+ 2, point0_7[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)   
+            #placeISOTile(isoToCart(point), YELLOW, 50)  
+            popUp(rect0_7)  
         if rect1_7.collidepoint(x, y):
             point = [point1_7[0]+ 2, point1_7[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+            #placeISOTile(isoToCart(point), YELLOW, 50)  
+            popUp(rect1_7)  
         if rect2_7.collidepoint(x, y):
             point = [point2_7[0]+ 2, point2_7[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+            #placeISOTile(isoToCart(point), YELLOW, 50)  
+            popUp(rect2_7)  
         if rect3_7.collidepoint(x, y):
             point = [point3_7[0]+ 2, point3_7[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+            #placeISOTile(isoToCart(point), YELLOW, 50)  
+            popUp(rect3_7)  
         if rect4_7.collidepoint(x, y):
             point = [point4_7[0]+ 2, point4_7[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+            #placeISOTile(isoToCart(point), YELLOW, 50) 
+            popUp(rect4_7)   
         if rect5_7.collidepoint(x, y):
             point = [point5_7[0]+ 2, point5_7[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+            #placeISOTile(isoToCart(point), YELLOW, 50) 
+            popUp(rect5_7)   
         if rect6_7.collidepoint(x, y):
             point = [point6_7[0]+ 2, point6_7[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+            #placeISOTile(isoToCart(point), YELLOW, 50) 
+            popUp(rect6_7)   
         if rect7_7.collidepoint(x, y):
             point = [point7_7[0]+ 2, point7_7[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+            #placeISOTile(isoToCart(point), YELLOW, 50) 
+            popUp(rect7_7)   
         if rect8_7.collidepoint(x, y):
             point = [point8_7[0]+ 2, point8_7[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+            #placeISOTile(isoToCart(point), YELLOW, 50)  
+            popUp(rect8_7)  
         if rect9_7.collidepoint(x, y):
             point = [point9_7[0]+ 2, point9_7[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+            #placeISOTile(isoToCart(point), YELLOW, 50)
+            popUp(rect9_7)    
         if rect0_8.collidepoint(x, y):
             point = [point0_8[0]+ 2, point0_8[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)   
+            #placeISOTile(isoToCart(point), YELLOW, 50)  
+            popUp(rect0_8)   
         if rect1_8.collidepoint(x, y):
             point = [point1_8[0]+ 2, point1_8[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+            #placeISOTile(isoToCart(point), YELLOW, 50) 
+            popUp(rect1_8)   
         if rect2_8.collidepoint(x, y):
             point = [point2_8[0]+ 2, point2_8[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+            #placeISOTile(isoToCart(point), YELLOW, 50) 
+            popUp(rect2_8)   
         if rect3_8.collidepoint(x, y):
             point = [point3_8[0]+ 2, point3_8[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+            #placeISOTile(isoToCart(point), YELLOW, 50) 
+            popUp(rect3_8)   
         if rect4_8.collidepoint(x, y):
             point = [point4_8[0]+ 2, point4_8[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+            #placeISOTile(isoToCart(point), YELLOW, 50) 
+            popUp(rect4_8)   
         if rect5_8.collidepoint(x, y):
             point = [point5_8[0]+ 2, point5_8[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+            #placeISOTile(isoToCart(point), YELLOW, 50)  
+            popUp(rect5_8)  
         if rect6_8.collidepoint(x, y):
             point = [point6_8[0]+ 2, point6_8[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+            #placeISOTile(isoToCart(point), YELLOW, 50)  
+            popUp(rect6_8)  
         if rect7_8.collidepoint(x, y):
             point = [point7_8[0]+ 2, point7_8[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+            #placeISOTile(isoToCart(point), YELLOW, 50) 
+            popUp(rect7_8)   
         if rect8_8.collidepoint(x, y):
             point = [point8_8[0]+ 2, point8_8[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+            #placeISOTile(isoToCart(point), YELLOW, 50) 
+            popUp(rect8_8)   
         if rect9_8.collidepoint(x, y):
             point = [point9_8[0]+ 2, point9_8[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+           #placeISOTile(isoToCart(point), YELLOW, 50)  
+            popUp(rect9_8)  
         if rect0_9.collidepoint(x, y):
             point = [point0_9[0]+ 2, point0_9[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)   
+           #placeISOTile(isoToCart(point), YELLOW, 50)  
+            popUp(rect0_9)   
         if rect1_9.collidepoint(x, y):
             point = [point1_9[0]+ 2, point1_9[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+            #placeISOTile(isoToCart(point), YELLOW, 50) 
+            popUp(rect1_9)   
         if rect2_9.collidepoint(x, y):
             point = [point2_9[0]+ 2, point2_9[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+            #placeISOTile(isoToCart(point), YELLOW, 50)  
+            popUp(rect2_9)  
         if rect3_9.collidepoint(x, y):
             point = [point3_9[0]+ 2, point3_9[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+            #placeISOTile(isoToCart(point), YELLOW, 50) 
+            popUp(rect3_9)   
         if rect4_9.collidepoint(x, y):
             point = [point4_9[0]+ 2, point4_9[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+            #placeISOTile(isoToCart(point), YELLOW, 50) 
+            popUp(rect4_9)   
         if rect5_9.collidepoint(x, y):
             point = [point5_9[0]+ 2, point5_9[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+            #placeISOTile(isoToCart(point), YELLOW, 50)  
+            popUp(rect5_9)  
         if rect6_9.collidepoint(x, y):
             point = [point6_9[0]+ 2, point6_9[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+            #placeISOTile(isoToCart(point), YELLOW, 50) 
+            popUp(rect6_9)   
         if rect7_9.collidepoint(x, y):
             point = [point7_9[0]+ 2, point7_9[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+            #placeISOTile(isoToCart(point), YELLOW, 50) 
+            popUp(rect7_9)   
         if rect8_9.collidepoint(x, y):
             point = [point8_9[0]+ 2, point8_9[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+            #placeISOTile(isoToCart(point), YELLOW, 50) 
+            popUp(rect8_9)   
         if rect9_9.collidepoint(x, y):
             point = [point9_9[0]+ 2, point9_9[1] -9.5]
-            placeISOTile(isoToCart(point), YELLOW, 50)  
+            #placeISOTile(isoToCart(point), YELLOW, 50)  
+            popUp(rect9_9)  
 
 
 #-------------------End---------------------
@@ -1195,7 +1331,7 @@ def options():
                     main_menu()
 
         pygame.display.update()
-
+username = ''
 def inputName():
     clock = pygame.time.Clock()
 
@@ -1217,13 +1353,18 @@ def inputName():
     color_passive = pygame.Color('chartreuse4')
     color = color_passive
 
+    BG = pygame.image.load("Assets/MenuScreenBackGround.jpg")
+    BG = pygame.transform.scale(BG, (WINDOW_WIDTH, WINDOW_HEIGHT))
+
+ 
     active = False
     screen = pygame.display.set_mode([WINDOW_WIDTH, WINDOW_HEIGHT])
-    Blurb1 = get_font2(30).render("You are an eccentric billionaire, who has dared to venture into the enterprise of space travel.", True, "#ff0000")
-    Blurb2 = get_font2(30).render("You have taken money from your own pocket fund the start of an offworld colony.", True, "#ff0000")
-    Blurb3 = get_font2(30).render("The journey of established an offworld colony is dangerous, but rewarding.  ", True, "#ff0000")
-    Blurb4 = get_font2(30).render("The press wants to know: What do you call yourself, and what will you call your colony?", True, "#ff0000")
-    Blurb5 = get_font2(30).render("Now pick your planet. Choose carefully, because there may be unseeen ramifications later in the game.", True, "#ff0000")
+    screen.blit(BG, (0, 0))
+    Blurb1 = get_font2(30).render("You are an eccentric billionaire, who has dared to venture into the enterprise of space travel.", True, "#42f5bf")
+    Blurb2 = get_font2(30).render("You have taken money from your own pocket fund the start of an offworld colony.", True, "#42f5bf")
+    Blurb3 = get_font2(30).render("The journey of established an offworld colony is dangerous, but rewarding.  ", True, "#42f5bf")
+    Blurb4 = get_font2(30).render("The press wants to know: What do you call yourself, and what will you call your colony?", True, "#42f5bf")
+    Blurb5 = get_font2(30).render("Now pick your planet. Choose carefully, because there may be unseeen ramifications later in the game.", True, "#42f5bf")
     Blurb_Loc1 = Blurb1.get_rect(center = (640, 60))
     screen.blit(Blurb1, Blurb_Loc1)
     Blurb_Loc2 = Blurb2.get_rect(center = (640, 85))
@@ -1237,7 +1378,9 @@ def inputName():
   
     NAME_TEXT = get_font(50).render("Please input your name", True, "#b68f40")
     NAME_RECT = NAME_TEXT.get_rect(center=(640, 300))
+
     screen.blit(NAME_TEXT, NAME_RECT)
+    
     while True:
         for event in pygame.event.get():
 
@@ -1260,6 +1403,8 @@ def inputName():
                     # get text input from 0 to -1 i.e. end.
                     user_text = user_text[:-1]
                 elif event.key == pygame.K_RETURN:
+                    print(user_text)
+                    username = user_text
                     loop = False
                     planetSelection()
                 # Unicode standard is used for string
