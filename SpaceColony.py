@@ -1,11 +1,20 @@
+from xml.etree.ElementTree import TreeBuilder
 import pygame, sys
 from button import Button
 from tkinter import CENTER
 import time, random
 from pygame.locals import *
+import numpy as np
+
 #Constants
+GREY = (160, 160, 160)
+YELLOW = (255, 255, 0)
+TOMATO = (255, 0, 0)
+DBLUE = (30, 144, 255)
+LIME = (0, 255, 0)
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
+GOLD = (252, 186, 3)
 #fonts = pygame.font.Font(None, 80)
 #Game Setup
 FPS = 60
@@ -14,7 +23,7 @@ WINDOW_WIDTH = 1280
 WINDOW_HEIGHT = 720
 #font = pygame.font.SysFont(None, 80)
 WINDOW = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-#pygame.display.set_caption("Space Colonization Simulator")
+pygame.display.set_caption("Space Colonization Simulator")
 pygame.init()
 
 pygame.display.set_caption("Menu")
@@ -22,6 +31,7 @@ pygame.display.set_caption("Menu")
 BG = pygame.image.load("Assets/MenuScreenBackGround2.jpg")
 BG = pygame.transform.scale(BG, (WINDOW_WIDTH, WINDOW_HEIGHT))
 
+#Setup Functions
 def get_font(size):  # Returns Press-Start-2P in the desired size
     return pygame.font.Font("Assets/zerovelo.ttf", size)
 def get_font2(size):
@@ -35,6 +45,172 @@ def writeText(text, font, color, surface,    x, y):
                          (box.width + 8, box.height + 8))
     pygame.draw.rect(WINDOW, BLACK, button, 2)
     return button
+def hud(health, population, money):
+  writeText(f'Health: {health}%   Population: {population}   Money:  ${money} ', get_font2(30), GOLD, WINDOW, 1000, 50) 
+
+
+#---------Stuff for the Isometric Grid -------
+button1_1Point = [633, 193]
+button1_1 = pygame.Rect(button1_1Point,
+                        (695-633, 226-193))
+
+grid1_1 = False
+# OUR GRID MAP:
+cellMAP = np.random.randint(2, size=(10, 10))
+print(cellMAP)
+# e.g. >>
+# [[1 1 1 1 1 1]
+#  [0 0 1 1 0 1]
+#  [1 0 0 0 1 1]
+#  [0 0 0 1 1 0]
+#  [0 1 1 0 0 0]
+#  [1 0 0 0 0 0]]
+
+
+_VARS = {'surf': False,
+         'gridSize': cellMAP.shape[0],
+         'cellSize': 50,
+         'cartGridOrigin': [80, 100],
+         'isoGridOrigin': [520, -140]}
+
+
+def main():
+    health = 100
+    population = 0
+    money = 1000000000
+    BG = pygame.image.load("Assets/pixil-frame-0.png")
+    BG = pygame.transform.scale(BG, (WINDOW_WIDTH, WINDOW_HEIGHT))
+    _VARS['surf'] = WINDOW
+    red = 0
+    blue = 0
+    green = 0
+    ascending = True
+    placeISOTiles()
+    while True:
+        #checkEvents()
+        #event=pygame.event.get()
+        for event in pygame.event.get():
+            
+            if event.type == pygame.QUIT:
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if OCEAN_BACK.checkForInput((pygame.mouse.get_pos())):
+                    planetSelection() 
+                x, y = pygame.mouse.get_pos()
+                print(x, y)
+                if button1_1.collidepoint(x, y):
+                    print("pressed")
+                    point = [WINDOW_WIDTH, WINDOW_HEIGHT]
+                    placeISOTile(isoToCart(point), BLACK, 50)
+
+            _VARS['surf'].fill((red, blue, green))
+            _VARS['surf'].blit(BG, (0, 0))
+            writeText("This is the Ocean Planet", get_font2(75), WHITE, WINDOW, WINDOW_WIDTH / 2, 100)
+            hud(health, population, money)
+            OCEAN_BACK = Button(image=None,
+                            pos=(100, 50),
+                            text_input="< BACK",
+                            font=get_font2(50),
+                            base_color="Gold",
+                            hovering_color="Green")
+            OCEAN_BACK.changeColor(pygame.mouse.get_pos())
+            OCEAN_BACK.update(WINDOW)
+
+            # PLacing tiles first to avoid tile border issues
+  
+            drawIsometricGrid(_VARS['isoGridOrigin'],
+                            _VARS['gridSize'],
+                            _VARS['cellSize'])
+
+            pygame.draw.rect(_VARS["surf"], BLACK, button1_1, 2)
+
+            pygame.display.update()
+            if ascending:
+                blue += 1
+                green +=1
+                red += 1
+                if blue == 255:
+                    ascending = False
+            else: 
+                blue -= 1
+                green -=1
+                red -=1
+                if blue == 0:
+                    ascending = True               
+            time.sleep(.000001)
+
+
+def cartToIso(point):
+    isoX = point[0] - point[1]
+    isoY = (point[0] + point[1])/2
+    return [isoX, isoY]
+
+def isoToCart(point):
+  y = (2*point[1]-point[0])/2 -13
+  x = (2*point[1]+point[0])/2 + 10
+  return [x, y]
+
+
+def placeISOTile(origin, color, cellSize):
+    print(origin, color, cellSize)
+    tilePoints = [cartToIso(origin),
+                  cartToIso([origin[0], cellSize + origin[1]]),
+                  cartToIso([cellSize + origin[0], cellSize + origin[1]]),
+                  cartToIso([cellSize + origin[0], origin[1]])]
+    pygame.draw.polygon(_VARS['surf'], color, tilePoints, )
+
+
+def drawIsometricGrid(origin, size, cellSize):
+    hw = cellSize*size
+    borderPoints = [cartToIso(origin),
+                    cartToIso([origin[0], hw + origin[1]]),
+                    cartToIso([hw + origin[0], hw + origin[1]]),
+                    cartToIso([hw + origin[0], origin[1]])]
+    # Draw border
+    pygame.draw.polygon(_VARS['surf'], BLACK, borderPoints, 2)
+    # Draw inner grid :
+    for colRow in range(1, size):
+        dim = cellSize*colRow
+        pygame.draw.line(_VARS['surf'], BLACK,
+                         cartToIso([origin[0], origin[1] + dim]),
+                         cartToIso([hw + origin[0], origin[1] + dim]), 1)
+        pygame.draw.line(_VARS['surf'], BLACK,
+                         cartToIso([origin[0] + dim, origin[1]]),
+                         cartToIso([origin[0] + dim, hw + origin[1]]), 1)
+
+
+def placeISOTiles():
+    tileDIM = _VARS['cellSize']
+    origin = _VARS['isoGridOrigin']
+    originX, originY = origin[0], origin[1]
+    for row in range(cellMAP.shape[0]):
+        for column in range(cellMAP.shape[1]):
+            # Is the grid cell tiled ?
+            if(cellMAP[column][row] == 1):
+                tilePoints = [cartToIso([originX + (tileDIM*row),
+                              originY + (tileDIM*column)]),
+                              cartToIso([originX + (tileDIM*(row + 1)),
+                                         originY + (tileDIM*column)]),
+                              cartToIso([originX + (tileDIM*(row + 1)),
+                                         originY + (tileDIM*(column + 1))]),
+                              cartToIso([originX + (tileDIM*row),
+                                         originY + (tileDIM*(column + 1))])
+                              ]
+                pygame.draw.polygon(_VARS['surf'], TOMATO, tilePoints, )
+
+
+def checkEvents():
+    x, y = pygame.mouse.get_pos()
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            sys.exit()
+        if event.type == KEYDOWN and event.key == K_q:
+            pygame.quit()
+            sys.exit()
+
+        
+#-------------------End---------------------
+
 
 def options():
     while True:
@@ -206,12 +382,27 @@ def planetSelection():
             PLANET_BACK.changeColor(PLANET_MOUSE_POS)
             PLANET_BACK.update(WINDOW)
 
-          
-            button1 = writeText("Rocky Planet", get_font2(50), WHITE, WINDOW,
+            button1_color = Button(image=None, pos = (WINDOW_WIDTH / 2 - 440, 375), text_input = "Rocky Planet", font = get_font2(50),
+                                    base_color=WHITE, hovering_color="Gold")
+            button1_color.changeColor(pygame.mouse.get_pos())
+            button1_color.update(WINDOW)
+
+            button2_color = Button(image=None, pos = (WINDOW_WIDTH / 2, WINDOW_HEIGHT-150), text_input = "Ocean Planet", font = get_font2(50),
+                                    base_color=WHITE, hovering_color="Gold")
+            button2_color.changeColor(pygame.mouse.get_pos())
+            button2_color.update(WINDOW)
+
+            button3_color = Button(image=None, pos = (WINDOW_WIDTH - 300, 80), text_input = "Mystery Planet", font = get_font2(50),
+                                    base_color=WHITE, hovering_color="Gold")
+            button3_color.changeColor(pygame.mouse.get_pos())
+            button3_color.update(WINDOW)
+
+
+            button1 = writeText("                 ", get_font2(50), WHITE, WINDOW,
                                 WINDOW_WIDTH / 2 - 440, 375)
-            button2 = writeText("Ocean Planet", get_font2(50), WHITE, WINDOW,
+            button2 = writeText("                 ", get_font2(50), WHITE, WINDOW,
                                 WINDOW_WIDTH / 2, WINDOW_HEIGHT-150)
-            button3 = writeText("????", get_font2(50), WHITE, WINDOW,
+            button3 = writeText("                     ", get_font2(50), WHITE, WINDOW,
                                 WINDOW_WIDTH - 300, 80)
           
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -221,33 +412,69 @@ def planetSelection():
                 if event.type == pygame.MOUSEBUTTONDOWN:               #If you click the back button
                     if PLANET_BACK.checkForInput(PLANET_MOUSE_POS):
                         main_menu()
-                        pygame.display.update()
                 x, y = pygame.mouse.get_pos()
                 if button1.collidepoint(x, y) == True:
 
                     loop = False
-                    mainGame("The Rocky Planet")
+                    rocky()
                 if button2.collidepoint(x, y) == True:
 
                     loop = False
-                    mainGame("The Ocean Planet")
+                    main()
 
                 if button3.collidepoint(x, y) == True:
                     loop = False
-                    mainGame("The Mystery Planet")
+                    mystery()
 
             pygame.display.update()
 
 
-def mainGame(plant):
-    PLANET = plant
 
-    #population = 0
-    #money = 1,000,000,000
-    loop = True
-    while loop:
+def ocean():
+    health = 100
+    population = 0
+    money = 1000000000
+    while True:
         for event in pygame.event.get():
-            if event.type == QUIT:
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            BG = pygame.image.load("Assets/OceanBack.jpg")
+            BG = pygame.transform.scale(BG, (WINDOW_WIDTH, WINDOW_HEIGHT))
+            WINDOW.fill((WHITE))
+            WINDOW.blit(BG, (0, 0))
+
+            writeText("This is the Ocean Planet", get_font2(75), WHITE, WINDOW,
+                      WINDOW_WIDTH / 2, 100)
+            hud(health, population, money)
+
+            
+
+            OCEAN_BACK = Button(image=None,
+                          pos=(100, 50),
+                          text_input="< BACK",
+                          font=get_font2(50),
+                          base_color="Gold",
+                          hovering_color="Green")
+
+            OCEAN_BACK.changeColor(pygame.mouse.get_pos())
+            OCEAN_BACK.update(WINDOW)
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if OCEAN_BACK.checkForInput((pygame.mouse.get_pos())):
+                    planetSelection()
+
+            main()
+            pygame.display.update()
+
+
+
+def rocky():
+    health = 100
+    population = 0
+    money = 1000000000
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
             BG = pygame.image.load("Assets/Hack_bg1.jpg")
@@ -255,17 +482,60 @@ def mainGame(plant):
             WINDOW.fill((WHITE))
             WINDOW.blit(BG, (0, 0))
 
-            writeText("This is " + PLANET, get_font2(75), BLACK, WINDOW,
+            writeText("This is the Rocky Planet", get_font2(75), BLACK, WINDOW,
                       WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2)
+            hud(health, population, money)
+            
+            OCEAN_BACK = Button(image=None,
+                          pos=(100, 50),
+                          text_input="< BACK",
+                          font=get_font2(50),
+                          base_color="Gold",
+                          hovering_color="Green")
+
+            OCEAN_BACK.changeColor(pygame.mouse.get_pos())
+            OCEAN_BACK.update(WINDOW)
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if OCEAN_BACK.checkForInput((pygame.mouse.get_pos())):
+                    planetSelection()
+            pygame.display.update()
+
+def mystery():
+    health = 100
+    population = 0
+    money = 1000000000
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            BG = pygame.image.load("Assets/MysteryBack.jpg")
+            BG = pygame.transform.scale(BG, (WINDOW_WIDTH, WINDOW_HEIGHT))
+            WINDOW.fill((WHITE))
+            WINDOW.blit(BG, (0, 0))
+
+            writeText("This is the Alien Planet", get_font2(75), BLACK, WINDOW,
+                      WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2)
+            hud(health, population, money)
+            OCEAN_BACK = Button(image=None,
+                          pos=(100, 50),
+                          text_input="< BACK",
+                          font=get_font2(50),
+                          base_color="Gold",
+                          hovering_color="Green")
+
+            OCEAN_BACK.changeColor(pygame.mouse.get_pos())
+            OCEAN_BACK.update(WINDOW)
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if OCEAN_BACK.checkForInput((pygame.mouse.get_pos())):
+                    planetSelection()
             pygame.display.update()
 
 
 
 
 
-
-
-
+#Inital Screen
 def main_menu():
     while True:
         WINDOW.blit(BG, (0, 0))
@@ -317,4 +587,6 @@ def main_menu():
         pygame.display.update()
 
 
+#Synopsis of Game Play
+# main_menu() --> inputName() --> planetSelection() --> mainGame(plant)
 main_menu()
