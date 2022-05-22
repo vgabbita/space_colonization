@@ -157,7 +157,7 @@ def placeISOTile(origin, color, cellSize):
                   cartToIso([origin[0], cellSize + origin[1]]),
                   cartToIso([cellSize + origin[0], cellSize + origin[1]]),
                   cartToIso([cellSize + origin[0], origin[1]])]
-    pygame.draw.polygon(_VARS['surf'], color, tilePoints, )
+    pygame.draw.polygon(WINDOW, color, tilePoints)
 
 
 def drawIsometricGrid(origin, size, cellSize):
