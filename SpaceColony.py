@@ -1,3 +1,9 @@
+'''
+Name: Varun Gabbita
+Space Colony Simulator
+This is the file that needs to run to play the game
+'''
+
 from xml.etree.ElementTree import TreeBuilder
 import pygame, sys
 from button import Button
@@ -5,7 +11,6 @@ from tkinter import CENTER
 import time, random
 from pygame.locals import *
 import numpy as np
-import hud as hd
 
 
 #Constants
