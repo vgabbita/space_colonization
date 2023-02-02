@@ -1107,7 +1107,7 @@ def main_ocean():
         _VARS['surf'].fill((red, blue, green))
         _VARS['surf'].blit(BG, (0, 0))
         writeText("This is the Ocean Planet", get_font2(75), WHITE, _VARS['surf'], WINDOW_WIDTH / 2, 100)
-        hud(health, population, money)
+        #hud(health, population, money)
         # PLacing tiles first to avoid tile border issues
         placeISOTiles()
         
@@ -1249,7 +1249,7 @@ def main_rocky():
         _VARS['surf'].fill((red, blue, green))
         _VARS['surf'].blit(BG, (0, 0))
         writeText("This is the Rocky Planet", get_font2(75), WHITE, _VARS['surf'], WINDOW_WIDTH / 2, 100)
-        hud(health, population, money)
+        #hud(health, population, money)
         # PLacing tiles first to avoid tile border issues
         placeISOTiles()
         
@@ -1389,7 +1389,7 @@ def main_mystery():
         _VARS['surf'].fill((red, blue, green))
         _VARS['surf'].blit(BG, (0, 0))
         writeText("This is the Mystery Planet", get_font2(75), WHITE, _VARS['surf'], WINDOW_WIDTH / 2, 100)
-        hud(health, population, money)
+        #hud(health, population, money)
         # PLacing tiles first to avoid tile border issues
         placeISOTiles()
         

@@ -5,6 +5,8 @@ from tkinter import CENTER
 import time, random
 from pygame.locals import *
 import numpy as np
+import hud as hd
+
 
 #Constants
 GREY = (160, 160, 160)
@@ -379,11 +381,11 @@ _VARS = {'surf': pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT)),
 health = 100
 population = 0
 money = 1000000000
-def hospital(): 
-    health += 100
-    money -= 1000
-    population += 200
-    hud(health, money, population)
+#def hospital(): 
+    #health += 100
+    #money -= 1000
+    #population += 200
+    #hud.hd(health, money, population)
 
 
 popupX, popupY  = pygame.mouse.get_pos() 
@@ -416,7 +418,7 @@ def popUp(rectangle):
           if event.type== pygame.MOUSEBUTTONDOWN:
             if button1.collidepoint(x,y):
                 print("Hospital")
-                hospital()
+                #hospital()
                 image = pygame.image.load("Assets/Hospital.png")
             if button2.collidepoint(x, y):
                 print("Farm")         
@@ -549,7 +551,26 @@ def main_ocean():
         pygame.draw.rect(_VARS["surf"], BLACK, rect9_9, 2)
         _VARS['surf'].fill((red, blue, green))
         _VARS['surf'].blit(BG, (0, 0))
-        hud(health, population, money)
+        OPTIONS_MOUSE_POS = pygame.mouse.get_pos()
+
+        OPTIONS_BACK = Button(image=None,
+                              pos=(640, 100),
+                              text_input="BACK",
+                              font=get_font(75),
+                              base_color="Black",
+                              hovering_color="Green")
+
+        OPTIONS_BACK.changeColor(OPTIONS_MOUSE_POS)
+        OPTIONS_BACK.update(_VARS['surf'])
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if OPTIONS_BACK.checkForInput(OPTIONS_MOUSE_POS):
+                    planetSelection()
+        #hud.hd(health, population, money)
         # PLacing tiles first to avoid tile border issues
         placeISOTiles()
         
@@ -687,9 +708,27 @@ def main_rocky():
         pygame.draw.rect(_VARS["surf"], BLACK, rect9_9, 2)
         _VARS['surf'].fill((red, blue, green))
         _VARS['surf'].blit(BG, (0, 0))
+        OPTIONS_MOUSE_POS = pygame.mouse.get_pos()
 
+        OPTIONS_BACK = Button(image=None,
+                              pos=(640, 100),
+                              text_input="BACK",
+                              font=get_font(75),
+                              base_color="Black",
+                              hovering_color="Green")
 
-        hud(health, population, money)
+        OPTIONS_BACK.changeColor(OPTIONS_MOUSE_POS)
+        OPTIONS_BACK.update(_VARS['surf'])
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if OPTIONS_BACK.checkForInput(OPTIONS_MOUSE_POS):
+                    planetSelection()
+
+        #hud.hd(health, population, money)
         # PLacing tiles first to avoid tile border issues
         placeISOTiles()
         
@@ -827,7 +866,28 @@ def main_mystery():
         pygame.draw.rect(_VARS["surf"], BLACK, rect9_9, 2)
         _VARS['surf'].fill((red, blue, green))
         _VARS['surf'].blit(BG, (0, 0))
-        hud(health, population, money)
+        OPTIONS_MOUSE_POS = pygame.mouse.get_pos()
+
+        OPTIONS_BACK = Button(image=None,
+                              pos=(640, 100),
+                              text_input="BACK",
+                              font=get_font(75),
+                              base_color="Black",
+                              hovering_color="Green")
+
+        OPTIONS_BACK.changeColor(OPTIONS_MOUSE_POS)
+        OPTIONS_BACK.update(_VARS['surf'])
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if OPTIONS_BACK.checkForInput(OPTIONS_MOUSE_POS):
+                    planetSelection()
+
+        #pygame.display.update()
+        #hud.hd(health, population, money)
         # PLacing tiles first to avoid tile border issues
         placeISOTiles()
         
