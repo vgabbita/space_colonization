@@ -45,8 +45,7 @@ def writeText(text, font, color, surface,    x, y):
                          (box.width + 8, box.height + 8))
     pygame.draw.rect(_VARS['surf'], BLACK, button, 2)
     return button
-def hud(health, population, money):
-  writeText(f'Health: {health}%   Population: {population}   Money:  ${money} ', get_font2(30), GOLD, _VARS['surf'], 1000, 50) 
+
 
 
 #-----------------Rectangle Buttons------------------
@@ -347,9 +346,6 @@ point9_9 = [635, 652.5]
 
 
 
-
-
-
 #---------Stuff for the Isometric Grid -------
 popupX = 0
 popupY = 0
@@ -379,6 +375,15 @@ _VARS = {'surf': pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT)),
          'cellSize': 50,
          'cartGridOrigin': [80, 100],
          'isoGridOrigin': [520, -140]}
+
+health = 100
+population = 0
+money = 1000000000
+def hospital(): 
+    health += 100
+    money -= 1000
+    population += 200
+    hud(health, money, population)
 
 
 popupX, popupY  = pygame.mouse.get_pos() 
@@ -411,6 +416,7 @@ def popUp(rectangle):
           if event.type== pygame.MOUSEBUTTONDOWN:
             if button1.collidepoint(x,y):
                 print("Hospital")
+                hospital()
                 image = pygame.image.load("Assets/Hospital.png")
             if button2.collidepoint(x, y):
                 print("Farm")         
@@ -425,7 +431,6 @@ def popUp(rectangle):
             check = False
         
             loop = False
-        
         pygame.display.update()
 
 def placeBuilding(image, point):
@@ -434,9 +439,6 @@ def placeBuilding(image, point):
 
 
 def main_ocean():
-    health = 100
-    population = 0
-    money = 1000000000
     red = 0
     blue = 0
     green = 0
@@ -573,15 +575,12 @@ def main_ocean():
 
 
 def main_rocky():
-    health = 100
-    population = 0
-    money = 1000000000
     red = 0
     blue = 0
     green = 0
     ascending = True    
     check = False
-    pygame.display.set_caption("Your Space Colony")
+    pygame.display.set_caption("The Rocky Planet")
     BG = pygame.image.load("Assets/RockyBackGround.png")
     BG = pygame.transform.scale(BG, (WINDOW_WIDTH, WINDOW_HEIGHT))
     while True:
@@ -717,14 +716,11 @@ def main_rocky():
         _VARS['surf'].blit(input, (100, 100))
 
 def main_mystery():
-    health = 100
-    population = 0
-    money = 1000000000
     red = 0
     blue = 0
     green = 0
     ascending = True  
-    pygame.display.set_caption("Your Space Colony")  
+    pygame.display.set_caption("The Mystery Planet")  
     BG = pygame.image.load("Assets/pixil-frame-0.png")
     BG = pygame.transform.scale(BG, (WINDOW_WIDTH, WINDOW_HEIGHT))
     while True:
